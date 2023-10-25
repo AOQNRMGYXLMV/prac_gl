@@ -3,6 +3,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <spdlog/spdlog.h>
 
 unsigned int VAO, VBO;
 unsigned int shader_program;
@@ -61,7 +62,7 @@ void PrepareTriangle() {
 
 int main() {
 	if (!glfwInit()) {
-		std::cerr << "Init glfw failed." << std::endl;
+		spdlog::error("Init glfw failed.");
 		return -1;
 	}
 
@@ -71,12 +72,12 @@ int main() {
 	auto window = glfwCreateWindow(800, 600, "Practicle OpenGL", nullptr, nullptr);
 
 	if (!window) {
-		std::cerr << "Create window failed." << std::endl;
+		spdlog::error("GLFW create window failed.");
 	}
 
 	glfwMakeContextCurrent(window);
 	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-		std::cerr << "GLAD init failed." << std::endl;
+		spdlog::error("GLAD init failed.");
 	}
 
 	PrepareTriangle();
