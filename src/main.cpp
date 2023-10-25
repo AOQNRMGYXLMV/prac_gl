@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
+#include <glm/vec3.hpp>
 
 unsigned int VAO, VBO;
 unsigned int shader_program;
