@@ -6,8 +6,9 @@
 #include <spdlog/spdlog.h>
 #include <glm/vec3.hpp>
 
+#include "Shader.h"
+
 unsigned int VAO, VBO;
-unsigned int shader_program;
 
 void PrepareTriangle() {
 	std::array<float, 9> vertices {
@@ -16,37 +17,7 @@ void PrepareTriangle() {
 		0.0f,  0.5f, 0.0f
 	};
 
-	// compile vertex shader
-	const char* vertex_shader_source = "#version 330 core\n"
-		"layout (location = 0) in vec3 aPos;\n"
-		"void main()\n"
-		"{\n"
-		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-		"}\0";
-
-	unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_shader_source, nullptr);
-	glCompileShader(vertex_shader);
-
-	// compile fragment shader
-	const char* fragment_shader_source = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-	"}\n\0";
-	unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_shader_source, nullptr);
-	glCompileShader(fragment_shader);
-
-	// link program
-	shader_program = glCreateProgram();
-	glAttachShader(shader_program, vertex_shader);
-	glAttachShader(shader_program, fragment_shader);
-	glLinkProgram(shader_program);
-
-	glDeleteShader(vertex_shader);
-	glDeleteShader(fragment_shader);
+	
 
 	// config VAO, VBO
 	glGenBuffers(1, &VBO);
@@ -59,6 +30,7 @@ void PrepareTriangle() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
 }
 
 int main() {
@@ -81,12 +53,16 @@ int main() {
 		spdlog::error("GLAD init failed.");
 	}
 
+	Shader shader;
+	shader.Init();
+	shader.LoadFromFile("triangle.vert", "triangle.frag");
+
 	PrepareTriangle();
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(0.3f, 0.5f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shader_program);
+		shader.Use();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glfwSwapBuffers(window);
