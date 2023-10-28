@@ -1,5 +1,7 @@
 set(SOURCE
 	main.cpp
+	Camera.h
+	Camera.cpp
 	Shader.h
 	Shader.cpp)
 
