@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <glm/gtc/type_ptr.hpp>
 
 void Shader::Init() {
 	program_id_ = glCreateProgram();
@@ -61,6 +62,12 @@ bool Shader::LoadFromFile(const std::string& vert_file, const std::string& frag_
 	return static_cast<bool>(success);
 }
 
-void Shader::Use() {
+void Shader::Use() const {
 	glUseProgram(program_id_);
 }
+
+void Shader::SetUniformMatrix4fv(const std::string& name, const glm::mat4& mat) const {
+	auto location = glGetUniformLocation(program_id_, name.c_str());
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+}
+

@@ -6,12 +6,12 @@ class Camera {
 public:
 	Camera() = default;
 	void SetCamera(const glm::vec3& pos, const glm::vec3& look_at, const glm::vec3& up);
-	void SetPerspective(float fov_y, float aspect_ratio, float near, float far);
+	void SetPerspective(double fov_y, double aspect_ratio, double near, double far);
 	glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;
 
 private:
-	float DegreeToRadian(float deg) const;
+	double DegreeToRadian(double deg) const;
 
 	glm::vec3 pos_;
 	glm::vec3 front_;
@@ -19,10 +19,10 @@ private:
 	glm::vec3 right_;
 	glm::mat4 view_;
 	glm::mat4 projection_;
-	float fov_y_;
-	float aspect_ratio_;
-	float near_;
-	float far_;
+	double fov_y_;
+	double aspect_ratio_;
+	double near_;
+	double far_;
 
-	static constexpr float M_PI = 3.14159265358979323846f;
+	static constexpr double M_PI = 3.14159265358979323846f;
 };
