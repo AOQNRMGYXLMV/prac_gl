@@ -13,10 +13,9 @@ void Camera::SetCamera(const glm::vec3& pos, const glm::vec3& look_at, const glm
 	right_ = glm::normalize(glm::cross(up, front_));
 	up_ = glm::cross(front_, right_);
 
-	glm::mat4 T_view = glm::translate(glm::mat4(1.0), -pos);
-	glm::mat4 R_view = glm::mat4(glm::transpose(glm::mat3{ right_, up_, front_ }));
-
-	view_ = R_view * T_view;
+	view_trans_  = glm::translate(glm::mat4(1.0), -pos);
+	view_rotate_ = glm::mat4(glm::transpose(glm::mat3{ right_, up_, front_ }));
+	view_ = view_rotate_ * view_trans_;
 }
 
 double Camera::DegreeToRadian(double deg) const {
@@ -45,6 +44,20 @@ void Camera::SetPerspective(double fov_y, double aspect_ratio, double near, doub
 	glm::mat4 M_ortho_trans = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, -(near_ + far_) / 2.0));
 
 	projection_ = M_ortho_scale * M_ortho_trans * M_p_to_o;
+}
+
+void Camera::ProcessMouseMove(double delta_x, double delta_y) {
+
+}
+
+glm::vec3 Camera::GetPosition() const {
+	return pos_;
+}
+
+void Camera::SetPosition(const glm::vec3& pos) {
+	pos_ = pos;
+	view_trans_ = glm::translate(glm::mat4(1.0), -pos_);
+	view_ = view_rotate_ * view_trans_;
 }
 
 glm::mat4 Camera::GetViewMatrix() const {

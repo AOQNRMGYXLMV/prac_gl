@@ -11,8 +11,11 @@
 
 #include "Shader.h"
 #include "Camera.h"
+#include "Events.h"
 
 unsigned int VAO, VBO;
+
+Camera g_camera;
 
 void PrepareTriangle() {
 	std::array<float, 36> vertices {
@@ -52,6 +55,9 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	auto window = glfwCreateWindow(800, 600, "Practicle OpenGL", nullptr, nullptr);
 
+	glfwSetCursorPosCallback(window, MouseMoveCallback);
+	glfwSetKeyCallback(window, KeyCallback);
+
 	if (!window) {
 		spdlog::error("GLFW create window failed.");
 	}
@@ -66,13 +72,11 @@ int main() {
 	shader.LoadFromFile("triangle.vert", "triangle.frag");
 
 	// Set camera params
-	Camera camera;
-	camera.SetCamera({ 0.0, 0.0, -1.0 }, { 0.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 });
-	camera.SetPerspective(60.0, 8.0 / 6.0, 0.1, 100.0);
+	g_camera.SetCamera({ 0.0, 0.0, -1.0 }, { 0.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 });
+	g_camera.SetPerspective(60.0, 8.0 / 6.0, 0.1, 100.0);
 
 	shader.Use();
-	shader.SetUniformMatrix4fv("view", camera.GetViewMatrix());
-	shader.SetUniformMatrix4fv("projection", camera.GetProjectionMatrix());
+	shader.SetUniformMatrix4fv("projection", g_camera.GetProjectionMatrix());
 
 	PrepareTriangle();
 	glEnable(GL_DEPTH_TEST);
@@ -81,7 +85,7 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.Use();
-
+		shader.SetUniformMatrix4fv("view", g_camera.GetViewMatrix());
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glfwSwapBuffers(window);

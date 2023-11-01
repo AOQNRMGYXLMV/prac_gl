@@ -3,7 +3,9 @@ set(SOURCE
 	Camera.h
 	Camera.cpp
 	Shader.h
-	Shader.cpp)
+	Shader.cpp
+	Events.h
+	Events.cpp)
 
 add_executable(prac_gl ${SOURCE})
 
