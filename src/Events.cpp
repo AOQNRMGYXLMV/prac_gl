@@ -15,34 +15,17 @@ void MouseMoveCallback(GLFWwindow* window, double x, double y) {
 	g_camera.ProcessMouseMove(x - last_x, y - last_y);
 }
 
-void KeyCallback(
-	GLFWwindow* window,
-	int key,
-	[[maybe_unused]] int scancode,
-	int action,
-	[[maybe_unused]] int mods) {
+void ProcessKeyEvents(GLFWwindow* window) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
 	static float speed = 0.1f;
-	glm::vec3 move(0);
-	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-		switch (key) {
-		case GLFW_KEY_W:
-			move.z += speed;
-			g_camera.Move(move);
-			break;
-		case GLFW_KEY_S:
-			move.z -= speed;
-			g_camera.Move(move);
-			break;
-		case GLFW_KEY_A:
-			move.x -= speed;
-			g_camera.Move(move);
-			break;
-		case GLFW_KEY_D:
-			move.x += speed;
-			g_camera.Move(move);
-			break;
-		default:
-			break;
-		}
-	}
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		g_camera.Move(glm::vec3(0, 0, speed));
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		g_camera.Move(glm::vec3(0, 0, -speed));
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		g_camera.Move(glm::vec3(-speed, 0, 0));
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		g_camera.Move(glm::vec3(speed, 0, 0));
 }

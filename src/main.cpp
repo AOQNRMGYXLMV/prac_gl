@@ -56,7 +56,6 @@ int main() {
 	auto window = glfwCreateWindow(800, 600, "Practicle OpenGL", nullptr, nullptr);
 
 	glfwSetCursorPosCallback(window, MouseMoveCallback);
-	glfwSetKeyCallback(window, KeyCallback);
 
 	if (!window) {
 		spdlog::error("GLFW create window failed.");
@@ -81,6 +80,8 @@ int main() {
 	PrepareTriangle();
 	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(window)) {
+		ProcessKeyEvents(window);
+
 		glClearColor(0.2f, 0.1f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
