@@ -9,7 +9,8 @@ public:
 	void SetPerspective(double fov_y, double aspect_ratio, double near, double far);
 	glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;
-	void ProcessMouseMove(double delta_x, double delta_y);
+	void Move(const glm::vec3& vec);
+	void ProcessMouseMove(float delta_x, float delta_y);
 	void SetPosition(const glm::vec3& pos);
 	glm::vec3 GetPosition() const;
 

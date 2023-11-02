@@ -22,24 +22,27 @@ void KeyCallback(
 	int action,
 	[[maybe_unused]] int mods) {
 	static float speed = 0.1f;
-	auto pos = g_camera.GetPosition();
+	glm::vec3 move(0);
 	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
 		switch (key) {
 		case GLFW_KEY_W:
-			pos.z += speed;
+			move.z += speed;
+			g_camera.Move(move);
 			break;
 		case GLFW_KEY_S:
-			pos.z -= speed;
+			move.z -= speed;
+			g_camera.Move(move);
 			break;
 		case GLFW_KEY_A:
-			pos.x -= speed;
+			move.x -= speed;
+			g_camera.Move(move);
 			break;
 		case GLFW_KEY_D:
-			pos.x += speed;
+			move.x += speed;
+			g_camera.Move(move);
 			break;
 		default:
 			break;
 		}
-		g_camera.SetPosition(pos);
 	}
 }
