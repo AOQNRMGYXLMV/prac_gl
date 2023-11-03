@@ -46,6 +46,11 @@ void Camera::SetPerspective(double fov_y, double aspect_ratio, double near, doub
 	projection_ = M_ortho_scale * M_ortho_trans * M_p_to_o;
 }
 
+// TODO: cache M_ortho_scale, M_ortho_trans and M_p_to_o;
+void Camera::UpdateAspectRatio(double aspect_ratio) {
+	SetPerspective(fov_y_, aspect_ratio, near_, far_);
+}
+
 void Camera::ProcessMouseMove(float delta_x, float delta_y) {
 	auto rotation = glm::mat4(1.0);
 	rotation = glm::rotate(rotation, static_cast<float>(DegreeToRadian(delta_x)), glm::vec3(0, 1.0, 0));
@@ -58,6 +63,19 @@ void Camera::ProcessMouseMove(float delta_x, float delta_y) {
 		glm::vec4{0, 0, 0, 1}
 	};
 	
+	view_rotate_ = glm::transpose(rotation * view_rotate_);
+	view_ = view_rotate_ * view_trans_;
+}
+
+void Camera::Rotate(const glm::vec3& axis, double angle) {
+	auto rotation = glm::rotate(glm::mat4(1.0), static_cast<float>(DegreeToRadian(angle)), axis);
+	view_rotate_ = glm::mat4{
+		glm::vec4{right_, 0},
+		glm::vec4{up_, 0},
+		glm::vec4{front_, 0},
+		glm::vec4{0, 0, 0, 1}
+	};
+
 	view_rotate_ = glm::transpose(rotation * view_rotate_);
 	view_ = view_rotate_ * view_trans_;
 }
