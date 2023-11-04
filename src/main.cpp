@@ -115,7 +115,10 @@ int main() {
 	g_shader.LoadFromFile("triangle.vert", "triangle.frag");
 
 	// Set camera params
-	g_camera.SetCamera({ 0.0, 0.0, -1.0 }, { 0.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 });
+	glm::vec3 init_pos(24.397, -83.063, -73.5177);
+	glm::vec3 up(0.055583, 0.256135, -0.965038);
+	glm::vec3 lookat(24.553335, -82.105133, -73.276779);
+	g_camera.SetCamera(init_pos, lookat, up);
 	g_camera.SetPerspective(60.0, 8.0 / 6.0, 0.1, 1000.0);
 
 	g_shader.Use();
