@@ -131,6 +131,8 @@ int main() {
 
 		g_shader.Use();
 		g_shader.SetUniformMatrix4fv("view", g_camera.GetViewMatrix());
+		//glBindVertexArray(VAO);
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
 		for (const auto& mesh : g_meshes)
 			mesh.Draw();
 		glfwSwapBuffers(window);
