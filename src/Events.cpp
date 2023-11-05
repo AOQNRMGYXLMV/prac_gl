@@ -1,17 +1,25 @@
 #include "Events.h"
 
+bool g_mouse_move_clear_flag = true;
+
+// 
+void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+		g_mouse_move_clear_flag = true;
+	}
+}
+
 void MouseMoveCallback(GLFWwindow* window, double x, double y) {
-	static bool first_call = true;
 	static double last_x;
 	static double last_y;
 
 	auto state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
 
 	if (state == GLFW_PRESS) {
-		if (first_call) {
+		if (g_mouse_move_clear_flag) {
 			last_x = x;
 			last_y = y;
-			first_call = false;
+			g_mouse_move_clear_flag = false;
 			return;
 		}
 

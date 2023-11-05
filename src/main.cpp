@@ -99,6 +99,7 @@ int main() {
 
 	glfwSetCursorPosCallback(window, MouseMoveCallback);
 	glfwSetWindowSizeCallback(window, WindowResizeCallback);
+	glfwSetMouseButtonCallback(window, MouseButtonCallback);
 
 	if (!window) {
 		spdlog::error("GLFW create window failed.");
