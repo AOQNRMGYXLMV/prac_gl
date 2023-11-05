@@ -30,6 +30,16 @@ void Mesh::Load(const aiMesh* mesh, const aiMatrix4x4& ai_transform) {
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 	glEnableVertexAttribArray(0);
+
+	if (mesh->HasNormals()) {
+		unsigned int normal_vbo;
+		glGenBuffers(1, &normal_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, normal_vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(aiVector3D) * (mesh->mNumVertices), mesh->mNormals, GL_STATIC_DRAW);
+	
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+		glEnableVertexAttribArray(1);
+	}
 }
 
 void Mesh::Draw() const {

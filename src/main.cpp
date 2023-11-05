@@ -115,22 +115,27 @@ int main() {
 	g_shader.LoadFromFile("triangle.vert", "triangle.frag");
 
 	// Set camera params
-	glm::vec3 init_pos(24.397, -83.063, -73.5177);
+	glm::vec3 cam_pos(24.397, -83.063, -73.5177);
 	glm::vec3 up(0.055583, 0.256135, -0.965038);
 	glm::vec3 lookat(24.553335, -82.105133, -73.276779);
-	g_camera.SetCamera(init_pos, lookat, up);
+	g_camera.SetCamera(cam_pos, lookat, up);
 	g_camera.SetPerspective(60.0, 8.0 / 6.0, 0.1, 1000.0);
 
 	g_shader.Use();
 	g_shader.SetUniformMatrix4fv("projection", g_camera.GetProjectionMatrix());
 
+	// …Ë÷√π‚’’
+	g_shader.SetUniform3fv("light_dir", glm::normalize(glm::vec3(1.0f, 1.0f, 0)));
+	g_shader.SetUniform3fv("light_color", glm::vec3(1.0, 1.0, 1.0));
+	g_shader.SetUniform3fv("camera_pos", cam_pos);
+
 	PrepareTriangle();
-	//glEnable(GL_DEPTH_TEST);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glEnable(GL_DEPTH_TEST);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while (!glfwWindowShouldClose(window)) {
 		ProcessKeyEvents(window);
 		glClearColor(0.2f, 0.1f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		g_shader.Use();
 		g_shader.SetUniformMatrix4fv("view", g_camera.GetViewMatrix());

@@ -68,6 +68,20 @@ void Shader::Use() const {
 
 void Shader::SetUniformMatrix4fv(const std::string& name, const glm::mat4& mat) const {
 	auto location = glGetUniformLocation(program_id_, name.c_str());
-	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+	if (location >= 0) {
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+	}
+	else {
+		spdlog::warn("Get uniform \"{}\" location failed.", name);
+	}
 }
 
+void Shader::SetUniform3fv(const std::string& name, const glm::vec3& vec) const {
+	auto location = glGetUniformLocation(program_id_, name.c_str());
+	if (location >= 0) {
+		glUniform3fv(location, 1, glm::value_ptr(vec));
+	}
+	else {
+		spdlog::warn("Get uniform \"{}\" location  failed.", name);
+	}
+}

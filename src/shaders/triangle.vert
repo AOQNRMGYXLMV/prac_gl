@@ -1,17 +1,18 @@
 #version 330 core
 
 layout (location = 0) in vec3 pos;
-layout (location = 1) in vec3 color;
+layout (location = 1) in vec3 normal;
+// layout (location = 2) in vec2 uv;
+
+out vec3 normal_out;
+out vec3 pos_out;
 
 uniform mat4 view;
 uniform mat4 projection;
 
-out vec3 oCol;
-
 void main() {
+	normal_out = normal;
+	pos_out = pos;
 	gl_Position = projection * view * vec4(pos, 1.0);
-	//gl_Position = vec4(pos, 1.0);
-	oCol = color;
 }
-
 
