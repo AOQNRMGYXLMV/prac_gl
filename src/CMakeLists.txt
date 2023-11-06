@@ -7,9 +7,12 @@ set(SOURCE
 	Mesh.h
 	Mesh.cpp
 	Shader.h
-	Shader.cpp)
+	Shader.cpp
+	stb_image.cpp)
 
 add_executable(prac_gl ${SOURCE})
+
+target_include_directories(prac_gl PUBLIC ${PROJECT_SOURCE_DIR}/third_party/stb)
 
 target_link_libraries(prac_gl glad glfw spdlog::spdlog glm::glm assimp)
 
