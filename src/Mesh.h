@@ -8,7 +8,7 @@
 class Mesh {
 public:
 	Mesh() = default;
-	void Load(const aiMesh* mesh, const aiMatrix4x4& ai_transform);
+	void Load(const aiScene* scene, const aiMesh* mesh, const aiMatrix4x4& ai_transform);
 	void Draw() const;
 
 private:

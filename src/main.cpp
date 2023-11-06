@@ -52,7 +52,7 @@ void ProcessNode(const aiScene* scene, const aiNode* node, aiMatrix4x4& transfor
 	if (node->mNumMeshes > 0) {
 		for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 			Mesh mesh;
-			mesh.Load(scene->mMeshes[node->mMeshes[i]], transform);
+			mesh.Load(scene, scene->mMeshes[node->mMeshes[i]], transform);
 			g_meshes.emplace_back(mesh);
 		}
 	}
@@ -93,7 +93,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	auto window = glfwCreateWindow(800, 600, "Practicle OpenGL", nullptr, nullptr);
+	auto window = glfwCreateWindow(1200, 900, "Practicle OpenGL", nullptr, nullptr);
 
 	glfwSetCursorPosCallback(window, MouseMoveCallback);
 	glfwSetWindowSizeCallback(window, WindowResizeCallback);
