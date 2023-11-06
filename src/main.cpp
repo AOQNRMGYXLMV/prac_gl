@@ -73,8 +73,6 @@ void LoadModel(const std::string& file) {
 		return;
 	}
 	
-	scene->HasCameras();
-
 	ProcessNode(scene, scene->mRootNode);
 }
 
