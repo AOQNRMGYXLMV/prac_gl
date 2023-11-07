@@ -3,6 +3,9 @@
 #include <spdlog/spdlog.h>
 #include <stb_image.h>
 
+std::unordered_set<std::string> Mesh::loaded_textures_{};
+unsigned int Mesh::texture_{ 0 };
+
 void Mesh::ConvertAiMat4ToGLM(glm::mat4& ans, const aiMatrix4x4& ai_mat) {
 	for (int r = 0; r < 4; r++)
 		for (int c = 0; c < 4; c++)
@@ -54,14 +57,29 @@ void Mesh::Load(const aiScene* scene, const aiMesh* mesh, const aiMatrix4x4& ai_
 			spdlog::error("Get the {}-th texture failed.", i);
 			break;
 		}
+
+		if (loaded_textures_.count(std::string(path.C_Str()))) continue;
+
 		spdlog::info("the {} texture path: {}.", i, path.C_Str());
 		if (path.C_Str()[0] == '*') {
 			const auto texture = scene->GetEmbeddedTexture(path.C_Str());
 			spdlog::info("Get embedded texture, width = {}, height = {}, format hint = {}", texture->mWidth, texture->mHeight, texture->achFormatHint);
 			if (std::string("png") == texture->achFormatHint) {
 				int x, y, channels;
-				stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(texture->pcData), texture->mWidth, &x, &y, &channels, 0);
+				auto data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(texture->pcData), texture->mWidth, &x, &y, &channels, 0);
 				spdlog::info("load png texture, width: {}, height: {}, channels: {}", x, y, channels);
+
+				glGenTextures(1, &texture_);
+				glBindTexture(GL_TEXTURE_2D, texture_);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+				glGenerateMipmap(GL_TEXTURE_2D);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+				stbi_image_free(data);
+				loaded_textures_.emplace(path.C_Str());
 			}
 		}
 	}
@@ -78,7 +96,10 @@ void Mesh::Load(const aiScene* scene, const aiMesh* mesh, const aiMatrix4x4& ai_
 }
 
 void Mesh::Draw() const {
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture_);
 	glBindVertexArray(vao_);
 	glDrawElements(GL_TRIANGLES, num_indices_, GL_UNSIGNED_INT, 0);
+	
 	glBindVertexArray(0);
 }

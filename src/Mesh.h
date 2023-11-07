@@ -10,6 +10,8 @@ public:
 	Mesh() = default;
 	void Load(const aiScene* scene, const aiMesh* mesh, const aiMatrix4x4& ai_transform);
 	void Draw() const;
+	static std::unordered_set<std::string> loaded_textures_;
+	static GLuint texture_;
 
 private:
 	static void ConvertAiMat4ToGLM(glm::mat4& ans, const aiMatrix4x4& ai_mat);
