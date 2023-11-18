@@ -17,8 +17,6 @@ public:
 	void Rotate(const glm::vec3& axis, double angle);
 
 private:
-	double DegreeToRadian(double deg) const;
-
 	glm::vec3 pos_;
 	glm::vec3 front_;
 	glm::vec3 up_;
@@ -32,6 +30,4 @@ private:
 	double aspect_ratio_;
 	double near_;
 	double far_;
-
-	static constexpr double M_PI = 3.14159265358979323846f;
 };

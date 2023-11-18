@@ -12,6 +12,7 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 void MouseMoveCallback(GLFWwindow* window, double x, double y) {
 	static double last_x;
 	static double last_y;
+	static float speed = 0.3f;
 
 	auto state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
 
@@ -22,9 +23,10 @@ void MouseMoveCallback(GLFWwindow* window, double x, double y) {
 			g_mouse_move_clear_flag = false;
 			return;
 		}
-
-		g_camera.Rotate(glm::vec3(0, 1.0, 0), (x - last_x) * 0.3);
-		g_camera.Rotate(glm::vec3(1.0, 0, 0), (y - last_y) * 0.3);
+		
+		glm::vec3 rot_axis(y - last_y, x - last_x, 0.0f);
+		auto angle = glm::length(rot_axis);
+		g_camera.Rotate(rot_axis, angle * speed);
 		last_x = x;
 		last_y = y;
 	}

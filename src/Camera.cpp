@@ -18,10 +18,6 @@ void Camera::SetCamera(const glm::vec3& pos, const glm::vec3& look_at, const glm
 	view_ = view_rotate_ * view_trans_;
 }
 
-double Camera::DegreeToRadian(double deg) const {
-	return deg * M_PI / 180.0f;
-}
-
 void Camera::SetPerspective(double fov_y, double aspect_ratio, double near, double far) {
 	// right hand coordinate
 	near_ = near;
@@ -37,7 +33,7 @@ void Camera::SetPerspective(double fov_y, double aspect_ratio, double near, doub
 	M_p_to_o[2][3] = 1.0;
 	M_p_to_o[3][2] = -near_ * far_;
 
-	double height = near * std::tan(DegreeToRadian(fov_y_ / 2.0f)) * 2.0f;
+	double height = near * std::tan(glm::radians(fov_y_ / 2.0f)) * 2.0f;
 	double width = height * aspect_ratio_;
 
 	glm::mat4 M_ortho_scale = glm::scale(glm::mat4(1.0), glm::vec3(2.0 / width, 2.0 / height, 2.0/(far_-near_)));
@@ -54,7 +50,7 @@ void Camera::UpdateAspectRatio(double aspect_ratio) {
 void Camera::Rotate(const glm::vec3& axis, double angle) {
 	// 将旋转轴从相机坐标变换到世界坐标
 	auto axis_rot = glm::transpose(view_rotate_) * glm::vec4(axis, 1.0);
-	auto rotation = glm::rotate(glm::mat4(1.0), static_cast<float>(DegreeToRadian(angle)), glm::vec3(axis_rot));
+	auto rotation = glm::rotate(glm::mat4(1.0), static_cast<float>(glm::radians(angle)), glm::vec3(axis_rot));
 
 	view_rotate_ = glm::mat4{
 		glm::vec4{right_, 0},
