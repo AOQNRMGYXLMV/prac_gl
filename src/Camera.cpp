@@ -10,11 +10,10 @@
 void Camera::SetCamera(const glm::vec3& pos, const glm::vec3& look_at, const glm::vec3& up) {
 	pos_ = pos;
 	front_ = glm::normalize(look_at - pos);
-	right_ = glm::normalize(glm::cross(up, front_));
-	up_ = glm::cross(front_, right_);
+	initial_up_ = up;
+	UpdateCameraVectors();
 
 	view_trans_  = glm::translate(glm::mat4(1.0), -pos);
-	view_rotate_ = glm::mat4(glm::transpose(glm::mat3{ right_, up_, front_ }));
 	view_ = view_rotate_ * view_trans_;
 }
 
@@ -47,25 +46,35 @@ void Camera::UpdateAspectRatio(double aspect_ratio) {
 	SetPerspective(fov_y_, aspect_ratio, near_, far_);
 }
 
-void Camera::Rotate(const glm::vec3& axis, double angle) {
-	// 将旋转轴从相机坐标变换到世界坐标
-	auto axis_rot = glm::transpose(view_rotate_) * glm::vec4(axis, 1.0);
-	auto rotation = glm::rotate(glm::mat4(1.0), static_cast<float>(glm::radians(angle)), glm::vec3(axis_rot));
-
-	view_rotate_ = glm::mat4{
-		glm::vec4{right_, 0},
-		glm::vec4{up_, 0},
-		glm::vec4{front_, 0},
-		glm::vec4{0, 0, 0, 1}
-	};
-	auto after_rot = rotation * view_rotate_;
-
-	// update vectors and matrixs
-	right_ = after_rot[0];
-	up_ = after_rot[1];
-	front_ = after_rot[2];
-	view_rotate_ = glm::transpose(after_rot);
+// update camera vectors by current front_ and initial_up_ member
+void Camera::UpdateCameraVectors() {
+	right_ = glm::normalize(glm::cross(initial_up_, front_));
+	up_ = glm::normalize(glm::cross(front_, right_));
+	view_rotate_ = glm::mat4(glm::transpose(glm::mat3{ right_, up_, front_ }));
 	view_ = view_rotate_ * view_trans_;
+}
+
+//void Camera::Rotate(const glm::vec3& axis, double angle) {
+//	// 将旋转轴从相机坐标变换到世界坐标
+//	auto axis_rot = glm::transpose(view_rotate_) * glm::vec4(axis, 1.0);
+//	auto rotation = glm::rotate(glm::mat4(1.0), static_cast<float>(glm::radians(angle)), glm::vec3(axis_rot));
+//
+//	front_ = rotation * glm::vec4(front_, 0);
+//	UpdateCameraVectors();
+//	view_ = view_rotate_ * view_trans_;
+//}
+
+void Camera::RotateZ(float angle) {
+	auto rotation = glm::rotate(glm::mat4(1.0f), glm::radians(angle), front_);
+	initial_up_ = rotation * glm::vec4(initial_up_, 0);
+	UpdateCameraVectors();
+}
+
+void Camera::ProcessMouseMove(float dx, float dy) {
+	auto rotation = glm::rotate(glm::mat4(1.0f), glm::radians(dx), up_);
+	rotation = glm::rotate(rotation, glm::radians(dy), right_);
+	front_ = rotation * glm::vec4(front_, 0);
+	UpdateCameraVectors();
 }
 
 glm::vec3 Camera::GetPosition() const {

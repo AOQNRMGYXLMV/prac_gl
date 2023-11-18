@@ -11,16 +11,19 @@ public:
 	glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;
 	void Move(const glm::vec3& vec);
-	void ProcessMouseMove(float delta_x, float delta_y);
+	void ProcessMouseMove(float dx, float dy);
 	void SetPosition(const glm::vec3& pos);
 	glm::vec3 GetPosition() const;
-	void Rotate(const glm::vec3& axis, double angle);
+	void RotateZ(float angle);
 
 private:
+	void UpdateCameraVectors();
+
 	glm::vec3 pos_;
 	glm::vec3 front_;
 	glm::vec3 up_;
 	glm::vec3 right_;
+	glm::vec3 initial_up_;
 
 	glm::mat4 view_trans_;
 	glm::mat4 view_rotate_;

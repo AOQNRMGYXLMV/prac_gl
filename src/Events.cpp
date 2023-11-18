@@ -24,9 +24,7 @@ void MouseMoveCallback(GLFWwindow* window, double x, double y) {
 			return;
 		}
 		
-		glm::vec3 rot_axis(y - last_y, x - last_x, 0.0f);
-		auto angle = glm::length(rot_axis);
-		g_camera.Rotate(rot_axis, angle * speed);
+		g_camera.ProcessMouseMove(x - last_x, y - last_y);
 		last_x = x;
 		last_y = y;
 	}
@@ -47,9 +45,9 @@ void ProcessKeyEvents(GLFWwindow* window) {
 		g_camera.Move(glm::vec3(speed, 0, 0));
 
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		g_camera.Rotate(glm::vec3(0, 0, 1.0), speed * 3.0);
+		g_camera.RotateZ(speed * 3.0f);
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-		g_camera.Rotate(glm::vec3(0, 0, 1.0), -speed * 3.0);
+		g_camera.RotateZ(-speed * 3.0f);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		g_camera.Move(glm::vec3(0, 0.5, 0));
 }
