@@ -11,13 +11,15 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <imgui/imgui.h>
+#include <imgui/backends/imgui_impl_glfw.h>
+#include <imgui/backends/imgui_impl_opengl3.h>
 
 #include "Shader.h"
 #include "Camera.h"
 #include "Events.h"
 #include "Mesh.h"
 
-std::vector<Mesh> g_meshes;
 unsigned int VAO, VBO;
 Shader g_shader;
 Camera g_camera;
@@ -47,39 +49,21 @@ void PrepareTriangle() {
 	glBindVertexArray(0);
 }
 
-void ProcessNode(const aiScene* scene, const aiNode* node, aiMatrix4x4& transform = aiMatrix4x4()) {
-	transform *= node->mTransformation;
-	if (node->mNumMeshes > 0) {
-		for (unsigned int i = 0; i < node->mNumMeshes; i++) {
-			Mesh mesh;
-			mesh.Load(scene, scene->mMeshes[node->mMeshes[i]], transform);
-			g_meshes.emplace_back(mesh);
-		}
-	}
-
-	if (node->mNumChildren > 0) {
-		for (unsigned int i = 0; i < node->mNumChildren; i++) {
-			ProcessNode(scene, node->mChildren[i]);
-		}
-	}
-}
-
-void LoadModel(const std::string& file) {
-	Assimp::Importer importer;
-	const auto scene = importer.ReadFile(file, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType | aiProcess_MakeLeftHanded);
-
-	if (nullptr == scene) {
-		spdlog::error("Load 3D model failed, path: {}", file);
-		return;
-	}
-	
-	ProcessNode(scene, scene->mRootNode);
-}
-
 void WindowResizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 	g_camera.UpdateAspectRatio(static_cast<double>(width) / height);
 	g_shader.SetUniformMatrix4fv("projection", g_camera.GetProjectionMatrix());
+}
+
+void InitImGui(GLFWwindow* window) {
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	auto& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init();
 }
 
 int main() {
@@ -108,7 +92,10 @@ int main() {
 		spdlog::error("GLAD init failed.");
 	}
 
-	LoadModel("../../assets/3d_material_ball.glb");
+	InitImGui(window);
+
+	Mesh mesh;
+	mesh.LoadFromFile("../../assets/3d_material_ball.glb");
 
 	g_shader.Init();
 	g_shader.LoadFromFile("triangle.vert", "triangle.frag");
@@ -132,7 +119,13 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
 		ProcessKeyEvents(window);
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
 		glClearColor(0.2f, 0.1f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -140,11 +133,18 @@ int main() {
 		g_shader.SetUniformMatrix4fv("view", g_camera.GetViewMatrix());
 		//glBindVertexArray(VAO);
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
-		for (const auto& mesh : g_meshes)
-			mesh.Draw();
+		mesh.Draw();
+
+		ImGui::Text("Hello, world %d", 123);
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(window);
-		glfwPollEvents();
 	}
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();
 
