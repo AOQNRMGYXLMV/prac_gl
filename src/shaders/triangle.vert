@@ -8,13 +8,14 @@ out vec3 normal_out;
 out vec3 pos_out;
 out vec2 uv_out;
 
+uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
 void main() {
-	normal_out = normal;
-	pos_out = pos;
+	normal_out = mat3(transpose(inverse(model))) * normal;
+	pos_out = vec3(model * vec4(pos, 1.0));
 	uv_out = uv;
-	gl_Position = projection * view * vec4(pos, 1.0);
+	gl_Position = projection * view * model * vec4(pos, 1.0);
 }
 

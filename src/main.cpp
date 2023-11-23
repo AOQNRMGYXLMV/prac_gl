@@ -24,31 +24,6 @@ unsigned int VAO, VBO;
 Shader g_shader;
 Camera g_camera;
 
-void PrepareTriangle() {
-	std::array<float, 36> vertices {
-		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-		0.0f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f
-	};
-
-	// config VAO, VBO
-	glGenBuffers(1, &VBO);
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-}
-
 void WindowResizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 	g_camera.UpdateAspectRatio(static_cast<double>(width) / height);
@@ -108,6 +83,7 @@ int main() {
 	g_camera.SetPerspective(60.0, 8.0 / 6.0, 0.1, 1000.0);
 
 	g_shader.Use();
+	g_shader.SetUniformMatrix4fv("model", glm::mat4(1.0f));
 	g_shader.SetUniformMatrix4fv("projection", g_camera.GetProjectionMatrix());
 
 	// …Ë÷√π‚’’
@@ -115,7 +91,6 @@ int main() {
 	g_shader.SetUniform3fv("light_color", glm::vec3(1.0, 1.0, 1.0));
 	g_shader.SetUniform3fv("camera_pos", cam_pos);
 
-	PrepareTriangle();
 	glEnable(GL_DEPTH_TEST);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while (!glfwWindowShouldClose(window)) {
@@ -131,8 +106,6 @@ int main() {
 
 		g_shader.Use();
 		g_shader.SetUniformMatrix4fv("view", g_camera.GetViewMatrix());
-		//glBindVertexArray(VAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 6);
 		mesh.Draw();
 
 		ImGui::Text("Hello, world %d", 123);

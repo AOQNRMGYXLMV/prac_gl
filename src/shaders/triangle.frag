@@ -16,11 +16,12 @@ void main() {
 	vec3 view = normalize(camera_pos - pos_out);
 	vec3 normal = normalize(normal_out);
 	vec3 obj_color = texture(diff_tex, uv_out).rgb;
-	const float kd = 0.7;
-	float ambient = 0.3;
+	const float kd = 1.0;
+	const float ks = 0.5;
+	float ambient = 0.2;
 	float diffuse =  kd * max(dot(normal, -light_dir), 0.0);
 	vec3 half = normalize(view - light_dir);
-	float specular = pow(dot(normal, half), 8);
+	float specular = ks * pow(max(dot(normal, half), 0), 8);
 
 	vec3 res = (diffuse + specular + ambient) * obj_color;
 
